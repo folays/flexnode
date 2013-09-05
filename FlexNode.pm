@@ -110,7 +110,7 @@ sub get_node($$)
 
 sub get_node2($$)
 {
-    my ($self, $lineage) = @_;
+    my ($self, $lineage, $debug) = @_;
 
     ### a coder :
     # - une fonction qui split le linexp,
@@ -125,6 +125,7 @@ sub get_node2($$)
 	my ($tag, $id, $class, $pindex) = $elem =~ m/^(\S+):(\S*)\|([\w ]*)(?:\[(.*)\])?$/o or die;
 	push @lineage, {tag => $tag, id => $id, class => $class, pindex => $pindex};
     }
+#    print Dumper \@lineage;
 
 #    my @pile = $self->{node};
     my @pile = $self->{node}->content_list();
@@ -132,9 +133,10 @@ sub get_node2($$)
     {
 	@pile = grep {(
 	    ref $_ &&
-#	    (printf "cmp %s - %s\n", $elem->{tag}, $_->tag) &&
+	    ($debug ? printf "cmp %s - %s\n", $elem->{tag}, $_->tag : 1) &&
+	    ($debug ? printf "id '%s' - '%s'\n", ($elem->{id} || ""), ($_->attr('id') || "") : 1) &&
 	    $elem->{tag} eq $_->tag &&
-	    ($elem->{id} ? $elem->{id} eq $_->attr('id') : 1) &&
+	    ($elem->{id} ? $elem->{id} eq ($_->attr('id') || "") : 1) &&
 	    ($elem->{class} ? $elem->{class} eq ($_->attr('class') || "") : 1) &&
 #	    (defined $elem->{pindex} ? $elem->{pindex} == $_->pindex() : 1) &&
 	    1)} @pile;
