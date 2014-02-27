@@ -50,6 +50,7 @@ sub get_root_node($$)
     # ==> decoded UTF-8 (or whatever) Perl's string means that the Perl's string representation possibly contains
     #     wide characters > 255 ("\x{256 and above}")
     $root->utf8_mode(1);
+    $root->ignore_unknown(0);
     if ($content =~ m/VISUELS/ || 1)
     {
 	$root->parse($content);
@@ -122,7 +123,7 @@ sub get_node2($$)
     my @lineage;
     foreach my $elem ($lineage =~ m/\G([^,]+)(?:,|$)/og)
     {
-	my ($tag, $id, $class, $pindex) = $elem =~ m/^(\S+):(\S*)\|([\w ]*)(?:\[(.*)\])?$/o or die;
+	my ($tag, $id, $class, $pindex) = $elem =~ m/^(\S+):(\S*)\|([\w -]*)(?:\[(.*)\])?$/o or die "$elem";
 	push @lineage, {tag => $tag, id => $id, class => $class, pindex => $pindex};
     }
 #    print Dumper \@lineage;

@@ -16,6 +16,7 @@ close FILE;
 $content = decode(detect($content), $content);
 
 my $root = HTML::TreeBuilder->new;
+$root->ignore_unknown(0);
 $root->parse($content);
 $root->eof();
 $root->elementify();
