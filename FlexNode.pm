@@ -4,6 +4,8 @@ use strict;
 use warnings FATAL => qw(uninitialized);
 
 use Data::Dumper;
+use Encode qw(decode encode is_utf8);
+use Encode::Detect::Detector; # libencode-detect-perl
 use HTML::TreeBuilder;
 
 sub new($$)
@@ -15,15 +17,26 @@ sub new($$)
     bless $self;
 
     $self->{root} = $self->get_root_node($content);
+    $self->{extra_chars} = "\xA0";
 
     return $self;
 }
 
 sub get_root_node($$)
 {
-    my ($self, $content) = @_;
+    my ($self, $content, $encoding) = @_;
 
-    #$content = decode(detect($content), $content);
+    $content = decode($encoding || detect($content), $content);
+
+#    if ($content =~ m/Honoraires ttc : 1318/o)
+#    {
+#	printf "-> UTF8 %d\n", is_utf8($content);
+#	for (my $i = 0; $i < length($content); ++$i)
+#	{
+#	    die "ASDASD" if ord(substr($content, $i, 1)) >= 255;
+#	}
+#	#exit 1;
+#    }
 
     my $root = HTML::TreeBuilder->new;
     # http://www.ahinea.com/en/tech/perl-unicode-struggle.html
@@ -49,7 +62,8 @@ sub get_root_node($$)
     #     only of non-wide characters <= 255
     # ==> decoded UTF-8 (or whatever) Perl's string means that the Perl's string representation possibly contains
     #     wide characters > 255 ("\x{256 and above}")
-    $root->utf8_mode(1);
+    #$root->utf8_mode(1);
+    #$root->attr_encoded(1);
     $root->ignore_unknown(0);
     if ($content =~ m/VISUELS/ || 1)
     {
@@ -173,7 +187,7 @@ sub as_trimmed_text($)
 {
     my ($self) = @_;
 
-    return $self->{node}->as_trimmed_text();
+    return $self->{node}->as_trimmed_text(extra_chars => $self->{root}->{extra_chars});
 }
 
 sub as_xml($)
