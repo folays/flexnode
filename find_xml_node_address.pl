@@ -13,7 +13,7 @@ die "usage: $0 file.html text\n" unless scalar @ARGV == 2;
 open FILE, "<", $ARGV[0] or die "could not open file";
 my $content = eval { local $/ = undef; <FILE> };
 close FILE;
-$content = decode(detect($content), $content);
+$content = decode(detect($content) || "iso-8859-1", $content);
 
 my $root = HTML::TreeBuilder->new;
 $root->ignore_unknown(0);
