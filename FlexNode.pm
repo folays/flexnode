@@ -16,7 +16,9 @@ sub new($$)
     my $self = {};
     bless $self;
 
-    $self->{root} = $self->get_root_node($content);
+    $self->{options} = \%options;
+
+    $self->{root} = $self->get_root_node($content, $self->{options}->{encoding});
     $self->{extra_chars} = "\xA0";
 
     return $self;
@@ -26,7 +28,7 @@ sub get_root_node($$)
 {
     my ($self, $content, $encoding) = @_;
 
-    $content = decode($encoding || detect($content), $content);
+    $content = decode($encoding || detect($content) || "utf8", $content);
 
 #    if ($content =~ m/Honoraires ttc : 1318/o)
 #    {
