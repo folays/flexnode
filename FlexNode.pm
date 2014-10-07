@@ -181,7 +181,7 @@ sub _get_lineage_path($)
 
 sub is_lineage_path($$)
 {
-    my ($node, $_) = @_;
+    my ($node, $lineage) = @_;
 
 }
 
